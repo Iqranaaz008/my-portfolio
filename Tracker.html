@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Expense Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:Arial;background:#eef2ff;margin:0;padding:15px}
+h1{text-align:center;color:#1e2a78}
+.card{background:white;padding:15px;border-radius:12px;margin-bottom:15px;box-shadow:0 2px 8px #ccc}
+input,select{width:100%;padding:10px;margin:5px 0;border:1px solid #ccc;border-radius:8px;box-sizing:border-box}
+button{width:100%;padding:12px;background:#4f46e5;color:white;border:none;border-radius:8px;font-size:16px}
+.item{display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #eee}
+.total{font-size:22px;text-align:center;font-weight:bold;color:green}
+.del{background:red;color:white;border:none;padding:5px 10px;border-radius:5px;width:auto}
+</style>
+</head>
+<body>
+<h1>💰 My Expense Tracker</h1>
+
+<div class="card">
+<div class="total">Total Kharcha: ₹<span id="total">0</span></div>
+<p style="text-align:center">Khana: ₹<span id="food">0</span> | College: ₹<span id="college">0</span> | Travel: ₹<span id="travel">0</span> | Other: ₹<span id="other">0</span></p>
+</div>
+
+<div class="card">
+<h3>Kharcha Add Karo</h3>
+<input type="text" id="name" placeholder="Kis cheez pe kharcha hua? Ex: Notes">
+<input type="number" id="amount" placeholder="Kitne Rupaye? Ex: 200">
+<select id="cat">
+<option value="food">Khana</option>
+<option value="college">College</option>
+<option value="travel">Travel</option>
+<option value="other">Other</option>
+</select>
+<button onclick="addExpense()">Add Kharcha +</button>
+</div>
+
+<div class="card">
+<h3>History</h3>
+<div id="list"></div>
+</div>
+
+<script>
+let expenses = JSON.parse(localStorage.getItem("exp")) || [];
+function show(){
+  let total=0, f=0, c=0, t=0, o=0;
+  let html="";
+  expenses.forEach((e,i)=>{
+    total+=e.amount;
+    if(e.cat=="food") f+=e.amount;
+    if(e.cat=="college") c+=e.amount;
+    if(e.cat=="travel") t+=e.amount;
+    if(e.cat=="other") o+=e.amount;
+    html+=`<div class="item"><span>${e.name} (${e.cat})</span><span>₹${e.amount} <button class="del" onclick="delExp(${i})">X</button></span></div>`;
+  });
+  document.getElementById("total").innerText=total;
+  document.getElementById("food").innerText=f;
+  document.getElementById("college").innerText=c;
+  document.getElementById("travel").innerText=t;
+  document.getElementById("other").innerText=o;
+  document.getElementById("list").innerHTML= html || "Abhi koi kharcha nahi hai";
+}
+function addExpense(){
+  let n=document.getElementById("name").value;
+  let a=parseInt(document.getElementById("amount").value);
+  let cat=document.getElementById("cat").value;
+  if(!n || !a){alert("Naam aur Rupaye dono likho"); return;}
+  expenses.push({name:n, amount:a, cat:cat});
+  localStorage.setItem("exp", JSON.stringify(expenses));
+  document.getElementById("name").value="";
+  document.getElementById("amount").value="";
+  show();
+}
+function delExp(i){
+  expenses.splice(i,1);
+  localStorage.setItem("exp", JSON.stringify(expenses));
+  show();
+}
+show();
+</script>
+</body>
+</html>
